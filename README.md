@@ -1,5 +1,3 @@
-# Java-Study-Notes-0330
-3月30日java学习笔记
 # 类和对象编程实践
 
 ## 一、实践目的
@@ -33,14 +31,13 @@ TestSellingDrink   测试类，创建对象并运行程序
 **Drink.java**
 
 ```java
-package Fish4174;
-
 public class Drink
 {
     public String name;//饮料名称
     public double price;//价格
     public int stock;//库存
     public double sales;//销售额
+    public static final int MAXSTOCK=100;//允许的最大库存量
     //无参构造方法
     public Drink(){}
     //带参数name
@@ -100,6 +97,12 @@ public class Drink
     }
     public void addStock(int amount)
     {
+        if(this.stock+amount>=MAXSTOCK)
+        {
+            this.stock=MAXSTOCK;
+            System.out.println(this.name+"库存已经补满，当前库存"+MAXSTOCK+"杯。");
+            return;
+        }
         if(amount>0)
         {
             this.stock+=amount;
@@ -116,8 +119,6 @@ public class Drink
 **DrinkMachine.java**
 
 ```java
-package Fish4174;
-
 public class DrinkMachine
 {
     public boolean makeDrink(Drink drink,double money)
@@ -136,14 +137,25 @@ public class DrinkMachine
         drink.decreaseStock(money);
         return true;
     }
+    public void fillDrink(Drink drink,int amount)
+    {
+        drink.addStock(amount);
+    }
+    public void staticMoney(Drink[] drinks)
+    {
+        double totalMoney=0.0;
+        for(int i=0;i<drinks.length;i++)
+        {
+            totalMoney+=drinks[i].sales;
+        }
+        System.out.println("今天的销售额是"+totalMoney+"元钱。");
+    }
 }
 ```
 
 **TestSellingDrink.java**
 
 ```java
-package Fish4174;
-
 public class TestSellingDrink
 {
     public static void main(String[] args)
@@ -158,7 +170,7 @@ public class TestSellingDrink
         double money=5;
         System.out.println("投入"+money+"元，购买第一杯可乐...");
         if(machine.makeDrink(cola,money)) money-=cola.price;
-        System.out.println("投入"+money+"元，购买第二杯可乐...");
+        System.out.println("投入"+money+"元，购买第二杯可乐..."        );
         if(machine.makeDrink(cola,money)) money-=cola.price;
         System.out.println("投入"+money+"元，购买第三杯可乐...");
         if(machine.makeDrink(cola,money)) money-=cola.price;
@@ -167,8 +179,11 @@ public class TestSellingDrink
         money+=5;
         System.out.println("投入"+money+"元，购买第一杯营养快线...");
         if(machine.makeDrink(milk,money)) money-=milk.price;
-        cola.addStock(10);
-        System.out.println("今天的销售额是"+(cola.getSales()+milk.getSales())+"元钱。");
+        machine.fillDrink(cola,10);
+        Drink[] drinks=new Drink[2];
+        drinks[0]=cola;
+        drinks[1]=milk;
+        machine.staticMoney(drinks);
     }
 }
 ```
